@@ -1,0 +1,8 @@
+{
+  "hosting": {
+    "source": "./build/web"
+  },
+  "projects": {
+    "default": "short-term-hospital-stay"
+  }
+}
