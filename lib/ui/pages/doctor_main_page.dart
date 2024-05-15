@@ -67,6 +67,7 @@ class _DoctorMainPageState extends State<DoctorMainPage> {
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,
           centerTitle: true,
+          shadowColor: Colors.white,
           title:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             TextButton(

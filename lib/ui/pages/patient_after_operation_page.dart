@@ -116,62 +116,146 @@ class _PatientAfterOperationPageState extends State<PatientAfterOperationPage> {
                   Text('Пожалуйста, нажмите эту кнопку после прибытия домой',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium),
-                  widget.patient.survey
-                      ? Container(
-                          margin: EdgeInsets.symmetric(vertical: 35),
-                          child: OutlinedButton(
-                              onPressed: () {},
-                              style: TextButton.styleFrom(
-                                  textStyle:
-                                      Theme.of(context).textTheme.labelMedium,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  side:
-                                      BorderSide(width: 2, color: Colors.black),
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: Colors.black),
-                              child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Оценить качество обслуживания',
-                                    ),
-                                    Container(
-                                        margin:
-                                            EdgeInsets.symmetric(horizontal: 8),
-                                        child: Icon(
-                                          Icons.create,
-                                          size: 25,
-                                        ))
-                                  ])))
-                      : SizedBox(),
-                  Text(
-                      "Пожалуйста, пройдите форму обратной связи, чтобы мы могли улучшить работу нашего стационара! Спасибо!"),
-                  CustomRichTextContainer(
-                      richText: RichText(
-                    text: TextSpan(
-                      text: 'Рекомендации\n\n',
-                      style: GoogleFonts.ibmPlexSans(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0,
-                        color: Colors.black,
+                  SizedBox(height: 10),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.all(24.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        width: 1.5,
+                        color: Colors.grey,
                       ),
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: 'В течение',
-                          style: GoogleFonts.ibmPlexSans(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0,
-                            color: Colors.grey[800],
-                          ),
-                        ),
-                      ],
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                  ))
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Важная информация',
+                            style: GoogleFonts.ibmPlexSans(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0,
+                              color: Colors.black,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Сейчас вы находитесь в палате под наблюдением медицинского персонала',
+                            style: GoogleFonts.ibmPlexSans(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 7,
+                          ),
+                          Text(
+                            " · В случае необходимости Вы можете обратиться на пост медсестры или нажать на кнопку экстренного вызова рядом с вами",
+                            style: GoogleFonts.ibmPlexSans(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              letterSpacing: 0,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            " · Перед выпиской вам будет выдан выписной эпикриз с рекомендациями на реабилитационный период.",
+                            style: GoogleFonts.ibmPlexSans(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              letterSpacing: 0,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            " · После получения выписки вы сможете отправиться домой.\n",
+                            style: GoogleFonts.ibmPlexSans(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              letterSpacing: 0,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ]),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.all(24.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1.5,
+                          color: Colors.grey,
+                        ),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'После операции\n',
+                              style: GoogleFonts.ibmPlexSans(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Text(
+                              '1. Пожалуйста, не садись за руль. Это может создать опасную ситуацию на дороге!\n',
+                              style: GoogleFonts.ibmPlexSans(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                            Text(
+                              '2. Ваши родственники смогут вас забрать вас сразу после выписки\n',
+                              style: GoogleFonts.ibmPlexSans(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                            Text(
+                              '3. Мы рекомендуем планировать дорогу домой заранее:\n',
+                              style: GoogleFonts.ibmPlexSans(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                            Text(
+                              " · Попросите родственников встретить вас",
+                              style: GoogleFonts.ibmPlexSans(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: 0,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Text(
+                              " · И/или рассмотрите возможность вызова такси",
+                              style: GoogleFonts.ibmPlexSans(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: 0,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ])),
                 ],
               ))),
     );

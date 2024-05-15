@@ -88,6 +88,9 @@ class _RegistratoreMainPageState extends State<RegistratorMainPage> {
                 textAlign: TextAlign.left,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
+              SizedBox(
+                height: 20,
+              ),
               GestureDetector(
                 onTap: () {
                   // Обработка нажатия на карточку
@@ -131,8 +134,10 @@ class _RegistratoreMainPageState extends State<RegistratorMainPage> {
                         child: Column(
                           children: [
                             Text("Пациенты в отделении"),
-                            Text("Количество: " +
-                                countActivePatients.toString()),
+                            Text(
+                                "Количество: " + countActivePatients.toString(),
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.grey)),
                           ],
                         ),
                       ),

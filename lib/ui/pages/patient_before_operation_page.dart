@@ -160,7 +160,7 @@ class PatientBeforeOperationPage extends StatelessWidget {
                             " · употреблять алкогольные напитки\n" +
                                 " · выкуривать более 3-5 сигарет в день\n" +
                                 " · выпивать более 3-х чашек кофе\n" +
-                                " · усиленно заниматься физическими упражнениями\n",
+                                " · усиленно заниматься физическими упражнениями",
                             style: GoogleFonts.ibmPlexSans(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,

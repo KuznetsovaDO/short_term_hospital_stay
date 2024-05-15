@@ -22,7 +22,7 @@ class _ListPatientsPageState extends State<ListPatientsPage> {
   late String medProfile = widget.medProfile;
   TextEditingController textEditingController = TextEditingController();
   StreamController<ErrorAnimationType>? errorController;
-  String dischargedText = "Выписать";
+
   final formKey = GlobalKey<FormState>();
 
   PatientController controller = PatientController();
@@ -153,7 +153,7 @@ class _ListPatientsPageState extends State<ListPatientsPage> {
                                   onPressed: () {
                                     changeStatus(patient.id, context);
                                   },
-                                  child: Text(dischargedText),
+                                  child: Text("Выписать"),
                                 ),
                               ),
                             ),
@@ -177,9 +177,7 @@ class _ListPatientsPageState extends State<ListPatientsPage> {
       DocumentReference documentReference =
           FirebaseFirestore.instance.collection('patients').doc(patientId);
       await documentReference.update({'status': 'Выписан(-а)'});
-      setState(() {
-        dischargedText = "Выписан";
-      });
+      setState(() {});
     } catch (error) {
       print('Произошла ошибка при обновлении статуса: $error');
     }
