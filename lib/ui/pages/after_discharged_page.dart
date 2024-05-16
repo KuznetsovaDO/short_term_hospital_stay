@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/patient_model.dart';
 import '../widgets/step_indicator.dart';
@@ -53,8 +54,16 @@ class _AfterDischargedPageState extends State<AfterDischargedPage> {
                       },
                       child: Text(
                         "Ваша оценка качества медицинской помощи",
+                        style: GoogleFonts.ibmPlexSans(
+                            fontSize: 18,
+                            letterSpacing: 0,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white),
                         textAlign: TextAlign.center,
                       )),
+                  SizedBox(
+                    height: 45,
+                  ),
                   Text(
                     "Пожалуйста, проидите форму обратной связи",
                     textAlign: TextAlign.center,

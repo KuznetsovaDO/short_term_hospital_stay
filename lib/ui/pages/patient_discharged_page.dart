@@ -125,7 +125,7 @@ class _PatientDischargedPageState extends State<PatientDischargedPage> {
                             child: Text(
                               'Пожалуйста, пройдите форму обратной связи, чтобы мы могли улучшить работу нашего стационара! Спасибо!',
                               textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 12),
+                              style: TextStyle(fontSize: 18),
                             )),
                         Container(
                             width: MediaQuery.of(context).size.width,
