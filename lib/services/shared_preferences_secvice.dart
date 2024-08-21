@@ -12,9 +12,9 @@ class PrefService {
     _preferences.setStringList("checklist", value);
   }
 
-  Future readCache() async {
+  Future readCache(String name) async {
     SharedPreferences _preferences = await SharedPreferences.getInstance();
-    var cache = _preferences.getString("password");
+    var cache = _preferences.getString(name);
 
     return cache;
   }

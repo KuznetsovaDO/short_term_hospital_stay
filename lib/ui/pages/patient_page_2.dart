@@ -1,32 +1,33 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:short_term_hospital_stay/models/patient_model.dart';
+
+import 'package:short_term_hospital_stay/services/shared_preferences_secvice.dart';
 import 'package:short_term_hospital_stay/ui/pages/auth_page.dart';
-import '../widgets/custom_richtext_widget.dart';
+
 import '../widgets/patient_condition_widget.dart';
 import '../widgets/step_indicator.dart';
-import 'patient_discharged_page.dart';
+import 'patient_page_3.dart';
 
-class PatientAfterOperationPage extends StatefulWidget {
-  final PatientModel patient;
-  PatientAfterOperationPage({required this.patient});
+class PatientPage2 extends StatefulWidget {
   @override
   _PatientAfterOperationPageState createState() =>
       _PatientAfterOperationPageState();
 }
 
-class _PatientAfterOperationPageState extends State<PatientAfterOperationPage> {
+class _PatientAfterOperationPageState extends State<PatientPage2> {
+  final PrefService _prefService = PrefService();
   final formKey = GlobalKey<FormState>();
   int selectedButtonIndex = 0;
   int selected = 0;
+
   @override
   Widget build(BuildContext context) {
     List<bool> _isSelected = [false, true];
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Text("Статус: перед операцией"),
+        title: Text("Статус: после операции"),
         leading: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -56,10 +57,10 @@ class _PatientAfterOperationPageState extends State<PatientAfterOperationPage> {
                   Padding(
                       padding: EdgeInsets.fromLTRB(5, 25, 0, 10),
                       child: Align(
-                          alignment: Alignment.centerLeft,
+                          alignment: Alignment.center,
                           child: Text(
                             'Как вы себя чувствуете?',
-                            textAlign: TextAlign.left,
+                            textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.labelMedium,
                           ))),
                   CustomToggleButtons(
@@ -72,7 +73,7 @@ class _PatientAfterOperationPageState extends State<PatientAfterOperationPage> {
                   ),
                   Padding(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+                          EdgeInsets.symmetric(horizontal: 50, vertical: 7),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -88,16 +89,54 @@ class _PatientAfterOperationPageState extends State<PatientAfterOperationPage> {
                           ),
                         ],
                       )),
+                  OutlinedButton(
+                    onPressed: () {
+                      _prefService.readCache("userID").then((value) {
+                        if (value.isNotEmpty) {
+                          setState(() {
+                            changeStatus(value, context);
+                          });
+                        }
+                      });
+                    },
+                    style: TextButton.styleFrom(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      side: BorderSide(width: 1, color: Colors.black),
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          textAlign: TextAlign.center,
+                          'Сохранить',
+                          style: GoogleFonts.ibmPlexSans(
+                              fontSize: 16,
+                              letterSpacing: 0,
+                              fontWeight: FontWeight.w500),
+                        ),
+                        Container(
+                            margin: EdgeInsets.symmetric(horizontal: 7),
+                            child: const Icon(
+                              Icons.done,
+                              size: 25,
+                            ))
+                      ],
+                    ),
+                  ),
                   Container(
                       margin: EdgeInsets.symmetric(vertical: 20),
                       child: ElevatedButton(
                           onPressed: () {
+                            _prefService.setCache("lastscreen", "Выписан");
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => PatientDischargedPage(
-                                          patient: widget.patient,
-                                        )));
+                                    builder: (context) => PatientPage3()));
                           },
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -268,11 +307,8 @@ class _PatientAfterOperationPageState extends State<PatientAfterOperationPage> {
           FirebaseFirestore.instance.collection('patients').doc(patientId);
 
       // Обновляем поля документа с помощью метода update
-      await documentReference.update({'status': 'Выписан(-а)'});
+      await documentReference.update({'status': 'Выписан'});
       await documentReference.update({'ConditionAfterOperation': selected + 1});
-      // ignore: use_build_context_synchronously
-
-      // print('Поле документа успешно обновлено');
     } catch (e) {
       print('Ошибка при обновлении поля документа: $e');
     }
@@ -284,11 +320,10 @@ class _PatientAfterOperationPageState extends State<PatientAfterOperationPage> {
     setState(() {
       selected = index;
     });
-    changeStatus(widget.patient.id, context);
   }
 
-  Future<bool?> showExitProfileDialog(BuildContext context) {
-    return showDialog<bool>(
+  showExitProfileDialog(BuildContext context) {
+    showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -299,14 +334,20 @@ class _PatientAfterOperationPageState extends State<PatientAfterOperationPage> {
                 Navigator.of(context).pop(
                     true); // Возвращает true, если пользователь выбрал "Да"
               },
-              child: Text('Да'),
+              child: Text(
+                'Ок',
+                style: TextStyle(color: Color.fromARGB(255, 0, 7, 205)),
+              ),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(
                     false); // Возвращает false, если пользователь выбрал "Нет"
               },
-              child: Text('Нет'),
+              child: Text(
+                'Нет',
+                style: TextStyle(color: Color.fromARGB(255, 0, 7, 205)),
+              ),
             ),
           ],
         );

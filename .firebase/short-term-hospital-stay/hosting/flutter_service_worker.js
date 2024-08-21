@@ -3,12 +3,12 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
-const RESOURCES = {"assets/AssetManifest.bin": "2e0eed56c4031f8987d21e32d5876ca2",
-"assets/AssetManifest.bin.json": "d3c38e9803aa444293cab0688786f2e0",
-"assets/AssetManifest.json": "4570f494690d349b9308dd70110062ba",
+const RESOURCES = {"assets/AssetManifest.bin": "c9828534db2875d4001e1f58a0510b60",
+"assets/AssetManifest.bin.json": "4879c996296324e5c23c195e3fbc4800",
+"assets/AssetManifest.json": "25aa4a97dd2a2b8c83cff428c7a04642",
 "assets/assets/fonts/IBMPlexSans-Bold.ttf": "1ae7d0a8e83337da66631aeca59fbb02",
 "assets/assets/fonts/IBMPlexSans-Regular.ttf": "1286abb632c5a409a0a997d11c994e34",
-"assets/assets/icons/logo.jpg": "49921f6f2c638b16dea164c52f26069d",
+"assets/assets/icons/logo.png": "bf6483b6a2c8770146f56de79734ddb3",
 "assets/assets/images/caric-mini.png": "2656afcad1c44a1af5b60be6fd3d5df9",
 "assets/assets/images/enter_SKP.gif": "9cfa5c51bc4e742c30eb9b04304ae1b2",
 "assets/assets/images/kantem-mini.png": "183c8a6c0939679b0110e08efbb2ba84",
@@ -39,9 +39,9 @@ const RESOURCES = {"assets/AssetManifest.bin": "2e0eed56c4031f8987d21e32d5876ca2
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "icons/Icon-maskable-192.png": "c457ef57daa1d16f64b27b786ec2ea3c",
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
-"index.html": "75aee841cd49e2d08195084de90a80f3",
-"/": "75aee841cd49e2d08195084de90a80f3",
-"main.dart.js": "908bcbdb3a9e261c1c74291ce64fcba5",
+"index.html": "9fb67beaebe0bc9a2ecbcd4845c30375",
+"/": "9fb67beaebe0bc9a2ecbcd4845c30375",
+"main.dart.js": "343ea2ca61809f55de28935f9200e609",
 "manifest.json": "8a5cac6f8959005a6fb94612cdfa3e1c",
 "version.json": "13a159b0a6d3ac0ffa49942860981361"};
 // The application shell files that are downloaded before a service worker can

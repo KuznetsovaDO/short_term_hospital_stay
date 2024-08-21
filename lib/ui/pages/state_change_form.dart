@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:short_term_hospital_stay/services/shared_preferences_secvice.dart';
 
-import '../../models/patient_model.dart';
 import 'evening_and_morning_form_page.dart';
 import 'gratitude_page.dart';
 
 class StateChangeForm extends StatelessWidget {
-  final PatientModel patient;
-  StateChangeForm({required this.patient});
+  late String userID;
+  final PrefService _prefService = PrefService();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  @override
+  void initState() {
+    _prefService.readList().then((value) {
+      print(value.toString());
+      if (value.isNotEmpty) {
+        userID = value;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +55,6 @@ class StateChangeForm extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (context) => EveningAndMorningFormPage(
                               isMorning: true,
-                              patient: patient,
                             ),
                           ),
                         );
@@ -86,7 +94,6 @@ class StateChangeForm extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) => GratitudePage(
-                                patient: patient,
                                 isMorning: true,
                               ),
                             ),
@@ -127,7 +134,6 @@ class StateChangeForm extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (context) => EveningAndMorningFormPage(
                               isMorning: true,
-                              patient: patient,
                             ),
                           ),
                         );
@@ -168,7 +174,7 @@ class StateChangeForm extends StatelessWidget {
     try {
       // Получаем документ пациента из Firestore по его ID
       DocumentSnapshot patientDoc =
-          await _firestore.collection('patients').doc(patient.id).get();
+          await _firestore.collection('patients').doc(userID).get();
 
       // Получаем значение поля "eveningForm"
       dynamic eveningForm = patientDoc['eveningForm'];
@@ -176,7 +182,7 @@ class StateChangeForm extends StatelessWidget {
       // Создаем или обновляем поле "morningForm" со значением из "eveningForm"
       await _firestore
           .collection('patients')
-          .doc(patient.id)
+          .doc(userID)
           .update({'morningForm': eveningForm});
     } catch (e) {
       print('Error updating morning form: $e');

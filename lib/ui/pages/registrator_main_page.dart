@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:short_term_hospital_stay/ui/pages/new_patient_page.dart';
 import '../../controllers/patient_controller.dart';
+import 'auth_stuff_page.dart';
 import 'list_patients_page.dart';
 
 class RegistratorMainPage extends StatefulWidget {
@@ -14,9 +13,6 @@ class RegistratorMainPage extends StatefulWidget {
 }
 
 class _RegistratoreMainPageState extends State<RegistratorMainPage> {
-  TextEditingController textEditingController = TextEditingController();
-  StreamController<ErrorAnimationType>? errorController;
-
   final formKey = GlobalKey<FormState>();
 
   PatientController controller = PatientController();
@@ -25,7 +21,6 @@ class _RegistratoreMainPageState extends State<RegistratorMainPage> {
 
   @override
   void initState() {
-    errorController = StreamController<ErrorAnimationType>();
     controller
         .getCountBeforeDischargedPatient("Регистрация")
         .then((value) => setState(() {
@@ -40,12 +35,6 @@ class _RegistratoreMainPageState extends State<RegistratorMainPage> {
   }
 
   @override
-  void dispose() {
-    errorController!.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     String medProfile = "Регистрация";
     return Scaffold(
@@ -53,9 +42,15 @@ class _RegistratoreMainPageState extends State<RegistratorMainPage> {
         automaticallyImplyLeading: false,
         centerTitle: true,
         title: GestureDetector(
-          onTap: () {
-            // Действия при нажатии на "Выйти из профиля"
-            // Например, можно добавить здесь код для выхода из профиля
+          onTap: () async {
+            bool? result = await showExitProfileDialog(context);
+            if (result != null && result) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AuthStaffPage(),
+                  ));
+            }
           },
           child: Text(
             'Выйти из профиля',
@@ -68,14 +63,14 @@ class _RegistratoreMainPageState extends State<RegistratorMainPage> {
             ),
           ),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications),
-            onPressed: () {
-              // Действия при нажатии на иконку уведомлений
-            },
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: Icon(Icons.notifications),
+        //     onPressed: () {
+        //       // Действия при нажатии на иконку уведомлений
+        //     },
+        //   ),
+        // ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -84,9 +79,8 @@ class _RegistratoreMainPageState extends State<RegistratorMainPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                "Профиль: ${medProfile} ",
+                "Профиль: Регистрация ",
                 textAlign: TextAlign.left,
-                style: Theme.of(context).textTheme.bodySmall,
               ),
               SizedBox(
                 height: 20,
@@ -183,8 +177,11 @@ class _RegistratoreMainPageState extends State<RegistratorMainPage> {
                         child: Column(
                           children: [
                             Text("Выписанные пациенты"),
-                            Text("Количество: " +
-                                countDischargedPatients.toString())
+                            Text(
+                                "Количество: " +
+                                    countDischargedPatients.toString(),
+                                style:
+                                    TextStyle(fontSize: 12, color: Colors.grey))
                           ],
                         ),
                       ),
@@ -231,14 +228,16 @@ class _RegistratoreMainPageState extends State<RegistratorMainPage> {
                 Navigator.of(context).pop(
                     true); // Возвращает true, если пользователь выбрал "Да"
               },
-              child: Text('Да'),
+              child: Text('Да',
+                  style: TextStyle(color: Color.fromARGB(255, 0, 7, 205))),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(
                     false); // Возвращает false, если пользователь выбрал "Нет"
               },
-              child: Text('Нет'),
+              child: Text('Нет',
+                  style: TextStyle(color: Color.fromARGB(255, 0, 7, 205))),
             ),
           ],
         );

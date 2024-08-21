@@ -142,6 +142,7 @@ class _NewPatientPageState extends State<NewPatientPage> {
                   )
                   .toList(),
             ),
+            SizedBox(height: 20),
             Text("№2 Диагноз пациента",
                 style: GoogleFonts.ibmPlexSans(
                     fontSize: 18,
@@ -190,13 +191,14 @@ class _NewPatientPageState extends State<NewPatientPage> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             Text("№3 Номер ЭМК пациента",
                 style: GoogleFonts.ibmPlexSans(
                     fontSize: 18,
                     letterSpacing: 0,
                     fontWeight: FontWeight.w600,
                     color: EMKerror == true ? Colors.red : Colors.black)),
+            SizedBox(height: 10),
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -218,6 +220,7 @@ class _NewPatientPageState extends State<NewPatientPage> {
                 ),
               ),
             ),
+            SizedBox(height: 20),
             Text("Дата поступления пациента",
                 style: GoogleFonts.ibmPlexSans(
                     fontSize: 18,
@@ -225,6 +228,7 @@ class _NewPatientPageState extends State<NewPatientPage> {
                     fontWeight: FontWeight.w600,
                     color:
                         selectedDateError == true ? Colors.red : Colors.black)),
+            SizedBox(height: 10),
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -242,13 +246,14 @@ class _NewPatientPageState extends State<NewPatientPage> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             Text("Возраст пациента",
                 style: GoogleFonts.ibmPlexSans(
                     fontSize: 18,
                     letterSpacing: 0,
                     fontWeight: FontWeight.w600,
                     color: ageError == true ? Colors.red : Colors.black)),
+            SizedBox(height: 10),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: Container(
@@ -392,8 +397,9 @@ class _NewPatientPageState extends State<NewPatientPage> {
           await FirebaseFirestore.instance.collection('med_profiles').get();
 
       // Добавляем JSON-данные в коллекцию patients Firestore
-      final DocumentReference docRef =
-          FirebaseFirestore.instance.collection('patients').doc(patient.id);
+      final DocumentReference docRef = FirebaseFirestore.instance
+          .collection('patients_in_hospital')
+          .doc(patient.id);
 
 // Добавление документа с указанным идентификатором
       await docRef.set(patientJson);

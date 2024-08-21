@@ -1,14 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:short_term_hospital_stay/ui/pages/auth_page.dart';
 import 'package:short_term_hospital_stay/ui/pages/list_patients_page.dart';
-
 import '../../controllers/patient_controller.dart';
-import '../../models/patient_model.dart';
-import 'patient_page.dart';
+import 'auth_stuff_page.dart';
 
 class DoctorMainPage extends StatefulWidget {
   final String? doctorId;
@@ -20,102 +14,81 @@ class DoctorMainPage extends StatefulWidget {
 
 class _DoctorMainPageState extends State<DoctorMainPage> {
   late String medProfile = '';
-  TextEditingController textEditingController = TextEditingController();
-  StreamController<ErrorAnimationType>? errorController;
-
   final formKey = GlobalKey<FormState>();
 
   PatientController controller = PatientController();
+  int countDischargedPatients = 0;
+  int countActivePatients = 0;
 
   @override
   void initState() {
-    errorController = StreamController<ErrorAnimationType>();
+    controller
+        .getCountBeforeDischargedPatient("Регистрация")
+        .then((value) => setState(() {
+              this.countActivePatients = value;
+            }));
+    controller
+        .getCountAfterDischargedPatient("Регистрация")
+        .then((value) => setState(() {
+              this.countDischargedPatients = value;
+            }));
     super.initState();
-    fetchMedProfile();
-  }
-
-  Future<void> fetchMedProfile() async {
-    try {
-      // Получаем документ с заданным doctorId
-      final doctorDoc = await FirebaseFirestore.instance
-          .collection('doctors')
-          .doc(widget.doctorId)
-          .get();
-
-      // Извлекаем значение med_profile из документа
-      final medProfileValue = doctorDoc.get('med_profile');
-
-      // Устанавливаем значение medProfile в состоянии
-      setState(() {
-        medProfile = medProfileValue ?? '';
-      });
-    } catch (e) {
-      print('Error fetching med profile: $e');
-    }
-  }
-
-  @override
-  void dispose() {
-    errorController!.close();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    String medProfile = "Регистрация";
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.white,
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          shadowColor: Colors.white,
-          title:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AuthPage(),
-                    ),
-                  );
-                },
-                child: Text(
-                  'Выйти из профиля',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.ibmPlexSans(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0,
-                      color: Colors.grey),
-                )),
-            Icon(Icons.notifications)
-          ])),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        title: GestureDetector(
+          onTap: () async {
+            bool? result = await showExitProfileDialog(context);
+            if (result != null && result) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AuthStaffPage(),
+                  ));
+            }
+          },
+          child: Text(
+            'Выйти из профиля',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+        // actions: [
+        //   IconButton(
+        //     icon: Icon(Icons.notifications),
+        //     onPressed: () {
+        //       // Действия при нажатии на иконку уведомлений
+        //     },
+        //   ),
+        // ],
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Профиль: ${medProfile} ",
-                        textAlign: TextAlign.left,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ],
+              Text(
+                "Профиль: Регистрация ",
+                textAlign: TextAlign.left,
+              ),
+              SizedBox(
+                height: 20,
               ),
               GestureDetector(
                 onTap: () {
                   // Обработка нажатия на карточку
-
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -135,7 +108,7 @@ class _DoctorMainPageState extends State<DoctorMainPage> {
                         MaterialPageRoute(
                           builder: (context) => ListPatientsPage(
                             isDischargedPatients: false,
-                            medProfile: medProfile,
+                            medProfile: "Регистрация",
                           ),
                         ),
                       );
@@ -152,11 +125,14 @@ class _DoctorMainPageState extends State<DoctorMainPage> {
                         ),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.all(10),
+                        padding: EdgeInsets.all(15),
                         child: Column(
                           children: [
                             Text("Пациенты в отделении"),
-                            // Text("Количество: "),
+                            Text(
+                                "Количество: " + countActivePatients.toString(),
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.grey)),
                           ],
                         ),
                       ),
@@ -168,15 +144,7 @@ class _DoctorMainPageState extends State<DoctorMainPage> {
                 onTap: () {
                   // Обработка нажатия на карточку
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ListPatientsPage(
-                        isDischargedPatients: true,
-                        medProfile: medProfile,
-                      ),
-                    ),
-                  );
+                  showAboutDialog(context: context);
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width,
@@ -189,13 +157,13 @@ class _DoctorMainPageState extends State<DoctorMainPage> {
                         MaterialPageRoute(
                           builder: (context) => ListPatientsPage(
                             isDischargedPatients: false,
-                            medProfile: medProfile,
+                            medProfile: "Регистрация",
                           ),
                         ),
                       );
                     },
                     child: Card(
-                      margin: EdgeInsets.symmetric(vertical: 7),
+                      margin: EdgeInsets.symmetric(vertical: 15),
                       elevation: 10,
                       surfaceTintColor: Colors.white,
                       shape: RoundedRectangleBorder(
@@ -206,11 +174,15 @@ class _DoctorMainPageState extends State<DoctorMainPage> {
                         ),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.all(10),
+                        padding: EdgeInsets.all(15),
                         child: Column(
                           children: [
                             Text("Выписанные пациенты"),
-                            // Text("Количество: "),
+                            Text(
+                                "Количество: " +
+                                    countDischargedPatients.toString(),
+                                style:
+                                    TextStyle(fontSize: 12, color: Colors.grey))
                           ],
                         ),
                       ),
@@ -222,6 +194,35 @@ class _DoctorMainPageState extends State<DoctorMainPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<bool?> showExitProfileDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Хотите выйти из профиля?"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(
+                    true); // Возвращает true, если пользователь выбрал "Да"
+              },
+              child: Text('Да',
+                  style: TextStyle(color: Color.fromARGB(255, 0, 7, 205))),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(
+                    false); // Возвращает false, если пользователь выбрал "Нет"
+              },
+              child: Text('Нет',
+                  style: TextStyle(color: Color.fromARGB(255, 0, 7, 205))),
+            ),
+          ],
+        );
+      },
     );
   }
 }

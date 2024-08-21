@@ -1,26 +1,33 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:short_term_hospital_stay/models/patient_model.dart';
+import 'package:short_term_hospital_stay/services/shared_preferences_secvice.dart';
 import 'package:short_term_hospital_stay/ui/pages/quality_assessment.dart';
-
-import '../widgets/custom_richtext_widget.dart';
 import '../widgets/step_indicator.dart';
-import 'evening_and_morning_form_page.dart';
 import 'state_change_form.dart';
 
-class PatientDischargedPage extends StatefulWidget {
-  final bool isMorning;
-  final PatientModel patient;
-
-  PatientDischargedPage({this.isMorning = false, required this.patient});
+class PatientPage4 extends StatefulWidget {
   @override
   _PatientDischargedPageState createState() => _PatientDischargedPageState();
 }
 
-class _PatientDischargedPageState extends State<PatientDischargedPage> {
+class _PatientDischargedPageState extends State<PatientPage4> {
   final formKey = GlobalKey<FormState>();
+  late String userID;
+  final PrefService _prefService = PrefService();
   int selectedButtonIndex = 0;
+
+  @override
+  void initState() {
+    _prefService.readList().then((value) {
+      print(value.toString());
+      if (value.isNotEmpty) {
+        setState(() {
+          userID = value;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,36 +65,19 @@ class _PatientDischargedPageState extends State<PatientDischargedPage> {
                                 style:
                                     Theme.of(context).outlinedButtonTheme.style,
                                 onPressed: () {
-                                  if (widget.isMorning != true) {
-                                    changeStatus(widget.patient.id,
-                                        "форма вечер", context);
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                EveningAndMorningFormPage(
-                                                    patient: widget.patient)));
-                                  } else {
-                                    changeStatus(widget.patient.id,
-                                        "форма утро", context);
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                StateChangeForm(
-                                                  patient: widget.patient,
-                                                )));
-                                  }
+                                  changeStatus(
+                                      userID, "24HoursAfterOperation", context);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              StateChangeForm()));
                                 },
                                 child: Text(
-                                  widget.isMorning == false
-                                      ? 'Пройти форму вечер'
-                                      : 'Пройти форму утро',
+                                  'Пройти форму утро',
                                 ))),
                         Text(
-                          widget.isMorning == false
-                              ? 'Пожалуйста, нажмите эту кнопку после 20:00 в день выписки из больницы'
-                              : 'Пожалуйста, нажмите эту кнопку после 08:00 на следующий день после выписки из больницы',
+                          'Пожалуйста, нажмите эту кнопку после 08:00 на следующий день после выписки из больницы',
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(
@@ -101,9 +91,7 @@ class _PatientDischargedPageState extends State<PatientDischargedPage> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          QualityAssessmentPage(
-                                        patient: widget.patient,
-                                      ),
+                                          QualityAssessmentPage(),
                                     ),
                                   );
                                 },

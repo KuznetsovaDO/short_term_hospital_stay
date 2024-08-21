@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DoctorModel {
   final String? id;
-  final String access_code;
+  final String? access_code;
   final String med_profile;
   final String lastname;
   final String name;
@@ -10,7 +10,7 @@ class DoctorModel {
 
   DoctorModel({
     this.id,
-    required this.access_code,
+    this.access_code,
     required this.med_profile,
     required this.lastname,
     required this.name,
@@ -21,7 +21,7 @@ class DoctorModel {
   String? get getId => id;
 
   // Геттер для свойства access_code
-  String get getAccessCode => access_code;
+  //String get getAccessCode => access_code;
 
   // Геттер для свойства med_profile
   String get getMedProfile => med_profile;
@@ -47,6 +47,7 @@ class DoctorModel {
       DocumentSnapshot<Map<String, dynamic>> document) {
     final data = document.data();
     return DoctorModel(
+        id: document.id,
         access_code: data!["access_code"],
         med_profile: data["med_profile"],
         lastname: data['lastname'],

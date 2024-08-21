@@ -1,29 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:short_term_hospital_stay/services/shared_preferences_secvice.dart';
 import 'package:short_term_hospital_stay/ui/pages/gratitude_page.dart';
-import 'package:short_term_hospital_stay/ui/widgets/condition_widget.dart';
 import 'package:short_term_hospital_stay/ui/widgets/custom_triangle_togglebutton.dart';
-
-import '../../models/patient_model.dart';
-import '../widgets/patient_condition_widget.dart';
 import '../widgets/smiley_button.dart';
 
-class EveningAndMorningFormPage extends StatefulWidget {
-  final bool isMorning;
-
-  const EveningAndMorningFormPage({
-    super.key,
-    this.isMorning = false,
-  });
+class EveningForm extends StatefulWidget {
   @override
   // ignore: library_private_types_in_public_api
   _EveningFormPageState createState() => _EveningFormPageState();
 }
 
-class _EveningFormPageState extends State<EveningAndMorningFormPage> {
+class _EveningFormPageState extends State<EveningForm> {
   final formKey = GlobalKey<FormState>();
   List<bool> feelingStates = [false, false, false, false, false];
   List<bool> painStates = [false, false, false, false, false];
@@ -57,8 +46,7 @@ class _EveningFormPageState extends State<EveningAndMorningFormPage> {
     Map<String, String> someMap = {};
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text(widget.isMorning == false ? 'Форма "Вечер"' : 'Форма "Утро"'),
+        title: Text('Форма "Вечер"'),
         leading: Padding(
             padding: const EdgeInsets.all(8.0),
             child: IconButton(
@@ -546,7 +534,23 @@ class _EveningFormPageState extends State<EveningAndMorningFormPage> {
       data["painIntensity"] = (selectedCondition + 1).toString();
       data["condition"] = (selectedPain + 1).toString();
 
-      if (widget.isMorning) {
+      if (data["dizziness"] == "true" ||
+          data["nausea"] == true ||
+          data["bleeding"] == "true" ||
+          _temperature > 40 ||
+          data["condition"] == "5" ||
+          data["painIntensity"] == "5" ||
+          data["painIntensity"] == "5") {
+        alarmingSymptoms = true;
+        await documentReference.update({'morningForm': data});
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => GratitudePage(
+                      isMorning: true,
+                      alarmingSymptoms: alarmingSymptoms,
+                    )));
+      } else {
         if (data["dizziness"] == "true" ||
             data["nausea"] == true ||
             data["bleeding"] == "true" ||
@@ -555,35 +559,15 @@ class _EveningFormPageState extends State<EveningAndMorningFormPage> {
             data["painIntensity"] == "5" ||
             data["painIntensity"] == "5") {
           alarmingSymptoms = true;
-          await documentReference.update({'morningForm': data});
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => GratitudePage(
-                        isMorning: true,
-                        alarmingSymptoms: alarmingSymptoms,
-                      )));
-        } else {
-          if (data["dizziness"] == "true" ||
-              data["nausea"] == true ||
-              data["bleeding"] == "true" ||
-              _temperature > 40 ||
-              data["condition"] == "5" ||
-              data["painIntensity"] == "5" ||
-              data["painIntensity"] == "5") {
-            alarmingSymptoms = true;
-          }
-          await documentReference.update({'eveningForm': data});
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => GratitudePage(
-                        isMorning: false,
-                        alarmingSymptoms: alarmingSymptoms,
-                      )));
         }
-
-        print('Поле документа успешно обновлено');
+        await documentReference.update({'eveningForm': data});
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => GratitudePage(
+                      isMorning: false,
+                      alarmingSymptoms: alarmingSymptoms,
+                    )));
       }
     } catch (e) {
       print('Ошибка при обновлении поля документа: $e');

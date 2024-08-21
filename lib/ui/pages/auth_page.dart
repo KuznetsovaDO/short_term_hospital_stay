@@ -1,23 +1,18 @@
 import 'dart:async';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:short_term_hospital_stay/models/patient_model.dart';
-import 'package:short_term_hospital_stay/routes.dart';
 import 'package:short_term_hospital_stay/services/shared_preferences_secvice.dart';
 import 'package:short_term_hospital_stay/ui/pages/address_and_contacts_page.dart';
 import 'package:short_term_hospital_stay/ui/pages/after_discharged_page.dart';
-import 'package:short_term_hospital_stay/ui/pages/evening_and_morning_form_page.dart';
-import 'package:short_term_hospital_stay/ui/pages/patient_discharged_page.dart';
+import 'package:short_term_hospital_stay/ui/pages/patient_page_3.dart';
+import 'package:short_term_hospital_stay/ui/pages/patient_page_4.dart';
 import '../../controllers/patient_controller.dart';
+import '../../models/patient_model.dart';
 import 'auth_stuff_page.dart';
-import 'patient_after_operation_page.dart';
-import 'patient_before_operation_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences_web/shared_preferences_web.dart';
+import 'patient_page_2.dart';
+import 'patient_page_1.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -32,12 +27,11 @@ class _MyHomePageState extends State<AuthPage> {
   StreamController<ErrorAnimationType>? errorController;
   bool medicalCardChecked = false;
   bool passportChecked = false;
-
+  late PatientModel patient;
   final formKey = GlobalKey<FormState>();
   PatientController controller = PatientController();
   String debugMessage = "";
   bool isLoading = false;
-  FirebaseAuth auth = FirebaseAuth.instance;
 
   //  список состояний чек-листа
   List<bool> checklist = [
@@ -57,16 +51,10 @@ class _MyHomePageState extends State<AuthPage> {
     false
   ];
 
+  String userID = "";
+
   @override
   void initState() {
-    _prefService.readCache().then((value) {
-      print(value.toString());
-      if (value != null) {}
-      // if (auth.currentUser != null) {
-      //   return Navigator.of(context).pushNamed(BeforeOperationRoute);
-      // }
-    });
-
     _prefService.readList().then((value) {
       print(value.toString());
       if (value.isNotEmpty) {
@@ -75,6 +63,7 @@ class _MyHomePageState extends State<AuthPage> {
         });
       }
     });
+
     super.initState();
   }
 
@@ -89,7 +78,7 @@ class _MyHomePageState extends State<AuthPage> {
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Image.asset(
-            "assets/icons/logo.jpg",
+            "assets/icons/logo.png",
           ),
         ),
         actions: <Widget>[
@@ -197,20 +186,50 @@ class _MyHomePageState extends State<AuthPage> {
                               "Код должен содержать не менее 4 символов";
                         });
                       } else {
-                        setState(() {
-                          isLoading = true;
-                        });
                         bool isPatientValid =
                             await controller.checkPatient(codeValue);
                         if (isPatientValid) {
-                          try {
-                            // UserCredential userCredential =
-                            //     await auth.signInAnonymously();
-
-                            getUserId(codeValue, context);
-                          } catch (e) {
-                            // Обработайте ошибку входа здесь
-                            print('Ошибка входа: $e');
+                          patient = await controller.getPatientData(
+                              access_code: codeValue);
+                          _prefService.setCache("userID", patient.id);
+                          if (patient.status == null) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PatientPage1()));
+                          } else if (patient.status == "До операции") {
+                            _prefService.setCache("lastscreen", patient.status);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PatientPage1()));
+                          } else if (patient.status == "После операции") {
+                            _prefService.setCache("lastscreen", patient.status);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PatientPage2()));
+                          } else if (patient.status == "Выписан") {
+                            _prefService.setCache("lastscreen", patient.status);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PatientPage4()));
+                          } else if (patient.status ==
+                              "12 часов после операции") {
+                            _prefService.setCache("lastscreen", patient.status);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PatientPage3()));
+                          } else if (patient.status ==
+                              "24 часа после операции") {
+                            _prefService.setCache("lastscreen", patient.status);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        AfterDischargedPage()));
                           }
                         } else {
                           setState(() {
@@ -572,86 +591,73 @@ class _MyHomePageState extends State<AuthPage> {
         .whenComplete(() {});
   }
 
-  Future<void> getUserId(String accessCode, BuildContext context) async {
-    Future<PatientModel> futurePatientModel =
-        controller.getPatientData(access_code: accessCode);
-    PatientModel patient = await futurePatientModel;
-    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
-        .instance
-        .collection('patients')
-        .where("access_code", isEqualTo: accessCode)
-        .get();
-
-    String documentId = querySnapshot.docs.first.id;
-    String status = querySnapshot.docs.first.get('status');
-    _prefService.setCache("patient_id", querySnapshot.docs.first.id);
-    _prefService.setCache("status", status);
-    if (status == "До операции") {
+  Future<void> auth(PatientModel patient, BuildContext context) async {
+    if (patient.status == "До операции") {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => PatientBeforeOperationPage(
-            patient: patient,
-          ),
+          builder: (context) => PatientPage1(),
         ),
       );
-    } else if (status == "После операции") {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PatientAfterOperationPage(
-            patient: patient,
-          ),
-        ),
-      );
-    } else if (status == "Выписан(-а)") {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PatientDischargedPage(
-            patient: patient,
-          ),
-        ),
-      );
-    } else if (status == "12 часов после операции") {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PatientDischargedPage(
-            patient: patient,
-            isMorning: true,
-          ),
-        ),
-      );
-    } else if (status == "форма вечер") {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EveningAndMorningFormPage(
-            patient: patient,
-            isMorning: false,
-          ),
-        ),
-      );
-    } else if (status == "24 часа после операции") {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AfterDischargedPage(
-            patient: patient,
-          ),
-        ),
-      );
-    } else if (status == "форма утро") {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EveningAndMorningFormPage(
-            isMorning: true,
-            patient: patient,
-          ),
-        ),
-      );
+      _prefService.setCache("lastscreen", "BeforeOperation");
     }
+    //  else if (status == "После операции") {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) => PatientAfterOperationPage(
+
+    //       ),
+    //     ),
+    //   );
+    // } else if (status == "Выписан(-а)") {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) => PatientDischargedPage(
+
+    //       ),
+    //     ),
+    //   );
+    // } else if (status == "12 часов после операции") {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) => PatientDischargedPage(
+
+    //         isMorning: true,
+    //       ),
+    //     ),
+    //   );
+    // } else if (status == "форма вечер") {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) => EveningAndMorningFormPage(
+
+    //         isMorning: false,
+    //       ),
+    //     ),
+    //   );
+    // } else if (status == "24 часа после операции") {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) => AfterDischargedPage(
+
+    //       ),
+    //     ),
+    //   );
+    // } else if (status == "форма утро") {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) => EveningAndMorningFormPage(
+    //         isMorning: true,
+
+    //       ),
+    //     ),
+    //   );
+    // }
   }
 }

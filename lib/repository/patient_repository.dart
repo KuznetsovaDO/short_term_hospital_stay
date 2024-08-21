@@ -42,17 +42,15 @@ class PatientRepository extends GetxController {
   Future<List<PatientModel>> allPatientsFromProfileBeforeDischarged(
       String profile) async {
     if (profile == "Регистрация") {
-      final snapshot = await _db
-          .collection("patients")
-          .where("status", whereIn: ["До операции", 'После операции']).get();
+      final snapshot = await _db.collection("patients_in_hospital").get();
       final patientData =
           snapshot.docs.map((e) => PatientModel.fromSnapshot(e)).toList();
       return patientData;
     } else {
       final snapshot = await _db
-          .collection("patients")
+          .collection("patients_in_hospital")
           .where("med_profile", isEqualTo: profile)
-          .where("status", whereIn: ["До операции", 'После операции']).get();
+          .get();
       final patientData =
           snapshot.docs.map((e) => PatientModel.fromSnapshot(e)).toList();
       return patientData;
@@ -61,16 +59,14 @@ class PatientRepository extends GetxController {
 
   Future<int> getCountBeforeDischargedPatient(String profile) async {
     if (profile == "Регистрация") {
-      final snapshot = await _db
-          .collection("patients")
-          .where("status", whereIn: ["До операции", 'После операции']).get();
+      final snapshot = await _db.collection("patients_in_hospital").get();
 
       return snapshot.size;
     } else {
       final snapshot = await _db
-          .collection("patients")
+          .collection("patients_in_hospital")
           .where("med_profile", isEqualTo: profile)
-          .where("status", whereIn: ["До операции", 'После операции']).get();
+          .get();
       final patientData =
           snapshot.docs.map((e) => PatientModel.fromSnapshot(e)).toList();
       return snapshot.size;
@@ -79,16 +75,14 @@ class PatientRepository extends GetxController {
 
   Future<int> getCountAfterDischargedPatient(String profile) async {
     if (profile == "Регистрация") {
-      final snapshot = await _db
-          .collection("patients")
-          .where("status", whereNotIn: ["До операции", 'После операции']).get();
+      final snapshot = await _db.collection("discharged_patients").get();
 
       return snapshot.size;
     } else {
       final snapshot = await _db
-          .collection("patients")
+          .collection("discharged_patients")
           .where("med_profile", isEqualTo: profile)
-          .where("status", whereNotIn: ["До операции", 'После операции']).get();
+          .get();
       final patientData =
           snapshot.docs.map((e) => PatientModel.fromSnapshot(e)).toList();
       return snapshot.size;
@@ -98,16 +92,13 @@ class PatientRepository extends GetxController {
   Future<List<PatientModel>> allPatientsFromProfileAfterDischarged(
       String profile) async {
     if (profile == "Регистрация") {
-      final snapshot = await _db
-          .collection("patients")
-          .where("status", whereNotIn: ["До операции", 'После операции']).get();
+      final snapshot = await _db.collection("discharged_patients").get();
       final patientData =
           snapshot.docs.map((e) => PatientModel.fromSnapshot(e)).toList();
       return patientData;
     } else {
       final snapshot = await _db
-          .collection("patients")
-          .where("status", whereNotIn: ["До операции", 'После операции'])
+          .collection("discharged_patients")
           .where("med_profile", isEqualTo: profile)
           .get();
       final patientData =

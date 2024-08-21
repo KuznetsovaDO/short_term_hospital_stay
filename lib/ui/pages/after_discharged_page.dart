@@ -9,9 +9,9 @@ import 'quality_assessment.dart';
 class AfterDischargedPage extends StatefulWidget {
   @override
   _AfterDischargedPageState createState() => _AfterDischargedPageState();
-  final PatientModel patient;
+
   final bool isMorning;
-  AfterDischargedPage({required this.patient, this.isMorning = false});
+  AfterDischargedPage({this.isMorning = false});
 }
 
 class _AfterDischargedPageState extends State<AfterDischargedPage> {
@@ -48,9 +48,7 @@ class _AfterDischargedPageState extends State<AfterDischargedPage> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => QualityAssessmentPage(
-                                      patient: widget.patient,
-                                    )));
+                                builder: (context) => QualityAssessmentPage()));
                       },
                       child: Text(
                         "Ваша оценка качества медицинской помощи",

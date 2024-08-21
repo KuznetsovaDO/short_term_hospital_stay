@@ -6,6 +6,8 @@ import 'package:short_term_hospital_stay/controllers/registrators_controller.dar
 import 'package:short_term_hospital_stay/ui/pages/doctor_main_page.dart';
 import 'package:short_term_hospital_stay/ui/pages/registrator_main_page.dart';
 
+import 'auth_page.dart';
+
 bool exist = false;
 String codeValue = '';
 
@@ -35,6 +37,11 @@ class _AuthStaffPageState extends State<AuthStaffPage> {
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () {
                     Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AuthPage(),
+                        ));
                   })),
           actions: [
             Image.asset(

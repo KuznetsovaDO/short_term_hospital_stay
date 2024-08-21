@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:short_term_hospital_stay/ui/pages/patient_discharged_page.dart';
+import 'package:short_term_hospital_stay/ui/pages/patient_page_3.dart';
 
-import '../../models/patient_model.dart';
 import 'after_discharged_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class GratitudePage extends StatelessWidget {
   final formKey = GlobalKey<FormState>();
-  final PatientModel patient;
+
   final bool isMorning;
   final bool alarmingSymptoms;
-  GratitudePage(
-      {required this.patient,
-      this.isMorning = false,
-      this.alarmingSymptoms = false});
+  GratitudePage({this.isMorning = false, this.alarmingSymptoms = false});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,17 +45,13 @@ class GratitudePage extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => AfterDischargedPage(
-                                    patient: patient,
                                     isMorning: true,
                                   )));
                     } else {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => PatientDischargedPage(
-                                    patient: patient,
-                                    isMorning: true,
-                                  )));
+                              builder: (context) => PatientPage3()));
                     }
                   },
                   style: Theme.of(context).outlinedButtonTheme.style,

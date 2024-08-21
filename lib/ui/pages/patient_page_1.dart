@@ -3,23 +3,27 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:short_term_hospital_stay/services/shared_preferences_secvice.dart';
-import '../../models/patient_model.dart';
+
 import '../../routes.dart';
 import '../widgets/step_indicator.dart';
-import 'patient_after_operation_page.dart';
+import 'patient_page_2.dart';
 
-class PatientBeforeOperationPage extends StatelessWidget {
+class PatientPage1 extends StatelessWidget {
   final formKey = GlobalKey<FormState>();
-  final PatientModel patient;
-  FirebaseAuth auth = FirebaseAuth.instance;
-  PatientBeforeOperationPage({required this.patient});
+
   final PrefService _prefService = PrefService();
+
+  FirebaseAuth auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           surfaceTintColor: Colors.white,
-          title: Text('Статус: после операции',
+          title: Text('Статус: до операции',
               style: GoogleFonts.ibmPlexSans(
                   fontSize: 18, letterSpacing: 0, fontWeight: FontWeight.w500)),
           leading: Padding(
@@ -28,12 +32,12 @@ class PatientBeforeOperationPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconButton(
-                      icon: const Icon(Icons.arrow_back),
+                      icon: const Icon(Icons.exit_to_app),
                       onPressed: () async {
                         bool? result = await showExitProfileDialog(context);
                         if (result != null && result) {
                           await _prefService
-                              .removeCache("password")
+                              .removeCache("userID")
                               .whenComplete(() {
                             Navigator.of(context).pushNamed(AuthRoute);
                           });
@@ -54,7 +58,19 @@ class PatientBeforeOperationPage extends StatelessWidget {
                     margin: EdgeInsets.only(top: 40, bottom: 15),
                     child: ElevatedButton(
                         onPressed: () {
-                          changeStatus(patient.getId, context);
+                          _prefService.readCache("userID").then((value) {
+                            if (value.isNotEmpty) {
+                              changeStatus(value, context);
+                            }
+                          });
+
+                          _prefService.setCache("lastscreen", "После операции");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PatientPage2(),
+                            ),
+                          );
                         },
                         style: Theme.of(context).outlinedButtonTheme.style,
                         child: Row(
@@ -129,7 +145,7 @@ class PatientBeforeOperationPage extends StatelessWidget {
                           ),
                           SizedBox(height: 10),
                           Text(
-                            "1. Перед операцией вам нужно сдать все необходимые анализ ыи пройти исследования:",
+                            "1. Перед операцией вам нужно сдать все необходимые анализы и пройти исследования:",
                             style: GoogleFonts.ibmPlexSans(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -325,15 +341,6 @@ class PatientBeforeOperationPage extends StatelessWidget {
 
       // Обновляем поля документа с помощью метода update
       await documentReference.update({'status': 'После операции'});
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PatientAfterOperationPage(
-            patient: patient,
-          ),
-        ),
-      );
     } catch (error) {
       print('Произошла ошибка при обновлении статуса: $error');
     }

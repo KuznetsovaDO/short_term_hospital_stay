@@ -1,26 +1,19 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:short_term_hospital_stay/controllers/doctors_controller.dart';
-import 'package:short_term_hospital_stay/models/doctor_model.dart';
-import 'package:short_term_hospital_stay/ui/pages/after_discharged_page.dart';
-import 'package:short_term_hospital_stay/ui/pages/patient_discharged_page.dart';
+import 'package:short_term_hospital_stay/models/patient_model.dart';
+import 'package:short_term_hospital_stay/services/shared_preferences_secvice.dart';
+
+import 'package:short_term_hospital_stay/ui/pages/patient_page_3.dart';
 import 'package:short_term_hospital_stay/ui/widgets/custom_assessment_widget.dart';
 
 import '../../controllers/patient_controller.dart';
-import '../../models/patient_model.dart';
 import '../widgets/rounded_radiolist.dart';
 import 'auth_page.dart';
-import 'patient_after_operation_page.dart';
-import 'patient_page.dart';
 
 class QualityAssessmentPage extends StatefulWidget {
   //const QualityAssessmentPage({Key? key}) : super(key: key);
-  final PatientModel patient;
-
-  QualityAssessmentPage({required this.patient});
 
   @override
   State<QualityAssessmentPage> createState() => _QualityAssessmentState();
@@ -28,37 +21,55 @@ class QualityAssessmentPage extends StatefulWidget {
 
 DoctorsController doctorsController = DoctorsController();
 PatientController patientController = PatientController();
+List<Widget> radioButtons = [];
+final _db = FirebaseFirestore.instance;
 
 class _QualityAssessmentState extends State<QualityAssessmentPage> {
+  late String userID;
+  final PrefService _prefService = PrefService();
+  late PatientModel patient;
   int selected = 0;
+  String selectedRadio = '';
   DoctorsController doctorsController = DoctorsController();
-  late Future<List<RoundedRadioItem>> items;
+  PatientController controller = PatientController();
+  List<RoundedRadioItem> items = [];
 
   @override
   void initState() {
-    super.initState();
-    // Выполняем асинхронную операцию и сохраняем результат в переменную items
-    items = _fetchDoctorListData();
-  }
-
-  Future<List<RoundedRadioItem>> _fetchDoctorListData() async {
-    List<Map<String, dynamic>> doctorDataList =
-        await doctorsController.doctorListData(widget.patient.getProfile);
-    List<RoundedRadioItem> radioItems = doctorDataList.map((item) {
-      return RoundedRadioItem(
-        lastname: item['lastname'],
-        name: item["name"],
-        imageUrl: item['imageUrl'],
-      );
-    }).toList();
-    RoundedRadioItem last = RoundedRadioItem(
-        lastname: "Я не помню ФИО врача", name: "", imageUrl: "");
-    radioItems[radioItems.length - 1] = last;
-    return radioItems;
+    _prefService.readList().then((value) {
+      print(value.toString());
+      if (value.isNotEmpty) {
+        setState(() async {
+          userID = value;
+          patient = await controller.getPatientData(access_code: userID);
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    //эти данные нужно вывести в список из radiobutton
+
+    _db
+        .collection('doctors')
+        .where('med_profile', isEqualTo: patient.medProfile)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      // Handle the snapshot data here
+      snapshot.docs.forEach((doc) {
+        setState(() {
+          items.add(RoundedRadioItem(
+            lastname: doc['lastname'],
+            name: doc["name"],
+            imageUrl: doc['imageUrl'],
+          ));
+        });
+      });
+    }).catchError((error) {
+      // Handle any errors that occur during the query
+      print("Error getting documents: $error");
+    });
     TextEditingController textEditingController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
@@ -66,7 +77,12 @@ class _QualityAssessmentState extends State<QualityAssessmentPage> {
         automaticallyImplyLeading: false,
         centerTitle: true,
         title: Row(children: [
-          Padding(padding: EdgeInsets.all(8), child: Icon(Icons.arrow_back)),
+          Padding(
+              padding: EdgeInsets.all(8),
+              child: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () => {Navigator.of(context).pop()},
+              )),
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,14 +168,8 @@ class _QualityAssessmentState extends State<QualityAssessmentPage> {
                   height: 35,
                 ),
                 Text("Выберите, пожалуйста, вашего лечащего врача."),
-                RoundedRadioList(
-                  items: items,
-                  onChanged: (value) {
-                    setState(() {
-                      selected = value;
-                    });
-                  },
-                ),
+
+                //
                 SizedBox(height: 25),
                 Text(
                   "Оцените уровень Вашей удовлетворенности работой Вашего врача",
@@ -351,17 +361,16 @@ class _QualityAssessmentState extends State<QualityAssessmentPage> {
                 ),
                 OutlinedButton(
                     onPressed: () async {
-                      widget.patient.survey = true;
+                      patient.survey = true;
                       CollectionReference patients =
                           FirebaseFirestore.instance.collection('patients');
 
                       // Преобразуем объект PatientModel в JSON
-                      Map<String, dynamic> patientJson =
-                          widget.patient.toJson();
+                      Map<String, dynamic> patientJson = patient.toJson();
 
                       // Добавляем JSON-объект в Firestore
                       try {
-                        await patients.doc(widget.patient.id).set(patientJson);
+                        await patients.doc(patient.id).set(patientJson);
                         print("Patient added to Firestore successfully!");
                       } catch (error) {
                         print("Failed to add patient to Firestore: $error");
@@ -381,11 +390,9 @@ class _QualityAssessmentState extends State<QualityAssessmentPage> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          widget.patient.status == "Выписан(-а)"
+                                          patient.status == "Выписан(-а)"
                                               ? AuthPage()
-                                              : PatientDischargedPage(
-                                                  patient: widget.patient,
-                                                ),
+                                              : PatientPage3(),
                                     ),
                                   );
                                 },

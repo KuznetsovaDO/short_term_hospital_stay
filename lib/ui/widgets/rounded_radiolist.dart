@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class RoundedRadioList extends StatefulWidget {
-  final Future<List<RoundedRadioItem>> items;
+  final List<RoundedRadioItem> items;
   final void Function(int)? onChanged;
 
   RoundedRadioList({required this.items, this.onChanged});
@@ -12,24 +12,11 @@ class RoundedRadioList extends StatefulWidget {
 
 class _RoundedRadioListState extends State<RoundedRadioList> {
   int? selected;
-  List<RoundedRadioItem> _radioItems =
-      []; // Создаем переменную для хранения списка элементов радио
-
-  @override
-  void initState() {
-    super.initState();
-    // В методе initState ждем разрешения Future и заполняем список элементов радио
-    widget.items.then((items) {
-      setState(() {
-        _radioItems = items;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: _radioItems.asMap().entries.map((entry) {
+      children: widget.items.asMap().entries.map((entry) {
         final index = entry.key;
         final item = entry.value;
 
