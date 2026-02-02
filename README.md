@@ -1,16 +1,52 @@
-# short_term_hospital_stay
+# Интеллектуальная система взаимодействия "врач-пациент"
 
-A new Flutter project.
+Этот репозиторий содержит в себе прототип интеллектуальной системы для стационаров кратковременного пребывания, разработанный в рамках научно-исследовательского проекта. Система оптимизирует взаимодействие между врачами и пациентами, обеспечивая дистанционный мониторинг состояния, безопасную коммуникацию и аналитику для руководства. Проект включает архитектурное проектирование, прототипирование интерфейсов и реализацию ключевых модулей.
 
-## Getting Started
+## Основные возможности
+1. **Трехмодульная архитектура**:
+   - Модуль пациента: самооценка состояния, чат с врачом, доступ к рекомендациям
+   - Модуль врача: управление пациентопотоком, мониторинг показателей, коммуникация
+   - Модуль руководителя: аналитика, контроль работы отделения
 
-This project is a starting point for a Flutter application.
+2. **Безопасная коммуникация**:
+   - Встроенный защищенный чат между врачом и пациентом
+   - Отсутствие необходимости обмена личными контактами
 
-A few resources to get you started if this is your first Flutter project:
+3. **Мониторинг состояния**:
+   - Система самооценки пациента с отправкой данных врачу
+   - Трекинг ключевых показателей в послеоперационный период
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+4. **Аналитика и управление**:
+   - Панель управления для руководителя с агрегированными данными
+   - Анализ пациентопотока и эффективности работы отделения
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Технологии
+Flutter (кроссплатформенное мобильное приложение)
+
+Firebase Firestore (база данных)
+
+Figma (прототипирование)
+
+## Ключевые экраны (прототипы)
+
+
+**Экран авторизации и чек-лист пациента**
+
+<img width="200" height="500" alt="IMG_8780" src="https://github.com/user-attachments/assets/4a10fdf9-74cc-47ba-b96c-424ff2f3d97c" />
+<img width="200" height="500" alt="IMG_8781" src="https://github.com/user-attachments/assets/a7b15199-f437-4c8c-b2da-b94a770c1c21" />
+
+
+**Экраны самооценки пациента**
+
+<img width="200" height="500" alt="IMG_8782" src="https://github.com/user-attachments/assets/1cbbe70a-731a-4f99-bc27-cccebee06440" />
+<img width="200" height="500" alt="IMG_8784" src="https://github.com/user-attachments/assets/61efc192-2f48-4488-9432-a56233b7e9ae" />
+<img width="200" height="500" alt="IMG_8786" src="https://github.com/user-attachments/assets/919dc48a-b445-48d6-bee3-a04f922ad246" />
+<img width="200" height="500" alt="IMG_8787" src="https://github.com/user-attachments/assets/67b7dcb4-07f1-4cb6-907e-55d5d4769662" />
+<img width="200" height="500" alt="IMG_8785" src="https://github.com/user-attachments/assets/29df3093-b609-4a1f-95de-646b7935b93d" />
+
+
+
+**Добавление нового пациента**
+
+<img width="200" height="500" alt="IMG_8777" src="https://github.com/user-attachments/assets/1acf54fd-abe2-4ffa-9473-6382e5454370" />
+<img width="200" height="500" alt="IMG_8776" src="https://github.com/user-attachments/assets/2da31071-940f-40d2-9efa-aa2a1ddefaf6" />
